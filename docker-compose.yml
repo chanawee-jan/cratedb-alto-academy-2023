@@ -1,0 +1,44 @@
+version: '2'
+# Run with docker-compose up -d
+# Navigate to http://localhost:4200
+# See Crate's getting started docs: https://crate.io/docs/reference/hello.html
+services:
+  crate01:
+    image: crate
+    hostname: crate01
+    ports:
+      - "4200:4200"
+      - "4300:4300"
+    environment:
+      CRATE_HEAP_SIZE: 1g
+    command: crate -Ccluster.name=cluster -Cnetwork.host=_site_ -Clicense.enterprise=false -Cdiscovery.zen.minimum_master_nodes=1
+    networks:
+      - crate
+    
+  crate02:
+    image: crate
+    hostname: crate02
+    ports:
+      - "4201:4200"
+      - "4301:4300"
+    environment:
+      CRATE_HEAP_SIZE: 1g
+    command: crate -Ccluster.name=cluster -Cnetwork.host=_site_ -Clicense.enterprise=false -Cdiscovery.zen.ping.unicast.hosts=crate01 -Cdiscovery.zen.minimum_master_nodes=1
+    networks:
+      - crate
+
+  crate03:
+    image: crate
+    hostname: crate03
+    ports:
+      - "4202:4200"
+      - "4302:4300"
+    environment:
+      CRATE_HEAP_SIZE: 1g
+    command: crate -Ccluster.name=cluster -Cnetwork.host=_site_ -Clicense.enterprise=false -Cdiscovery.zen.ping.unicast.hosts=crate01 -Cdiscovery.zen.minimum_master_nodes=1
+    networks:
+      - crate
+
+networks:
+  crate:
+    driver: bridge
